@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PawMap - Map</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"
+    />
+
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/map.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <h2>PawMap</h2>
+      <div class="nav-links" id="nav-links">
+        <!-- Injected by JS depending on Auth state -->
+      </div>
+    </nav>
+
+    <!-- Search Box Overlay -->
+    <div class="search-box-container">
+      <input type="text" id="search-input" placeholder="Search location..." />
+      <ul id="search-results" class="hidden"></ul>
+    </div>
+
+    <!-- Add Animal FAB -->
+    <button id="fab-add-animal" class="fab hidden">+</button>
+
+    <!-- Draft Reporting HUD -->
+    <div id="reporting-hud" class="reporting-hud hidden">
+      <span id="hud-pin-count">Draft Pins: 0/3</span>
+      <button id="hud-report-btn" class="btn" style="padding: 5px 10px">
+        Report Sighting
+      </button>
+      <button
+        id="hud-clear-btn"
+        class="btn btn-danger"
+        style="padding: 5px 10px"
+      >
+        Clear
+      </button>
+    </div>
+
+    <!-- The Map -->
+    <div id="map"></div>
+
+    <!-- Native Sighting Dialog -->
+    <dialog id="animal-dialog">
+      <span id="close-dialog" class="close-btn">&times;</span>
+      <h2 style="margin-bottom: 20px">Report Sighting</h2>
+
+      <form id="animal-form">
+        <div class="form-group">
+          <label>Name (Optional)</label>
+          <input type="text" id="animal-name" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label>Type</label>
+          <select id="animal-type" class="form-input" required>
+            <option value="dog">Dog</option>
+            <option value="cat">Cat</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Incident</label>
+          <select id="animal-incident" class="form-input" required>
+            <option value="lost">Lost</option>
+            <option value="found">Found</option>
+            <option value="sighting">Sighting</option>
+            <option value="injured">Injured</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Breed</label>
+          <input type="text" id="animal-breed" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label>Images/Videos</label>
+          <input
+            type="file"
+            id="animal-media"
+            class="form-input"
+            multiple
+            accept=".jpg,.jpeg,.png,.mp4"
+          />
+        </div>
+
+        <div class="form-group">
+          <button type="button" id="get-location-btn" class="btn">
+            Use Current Location
+          </button>
+          <p id="selected-coords" style="margin-top: 10px; font-style: italic">
+            Select location on map or use button
+          </p>
+        </div>
+
+        <button type="submit" class="btn" style="width: 100%">
+          Submit Sighting
+        </button>
+      </form>
+    </dialog>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/map.js"></script>
+  </body>
+</html>

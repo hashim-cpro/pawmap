@@ -1,0 +1,173 @@
+/* Map Specific Layout */
+#map {
+  width: 100%;
+  height: calc(100vh - 60px); /* Fill remaining space below navbar */
+  z-index: 1; /* Keep map behind modals */
+}
+
+/* Floating Elements on Map */
+.search-box-container {
+  position: absolute;
+  top: 80px;
+  left: 50px;
+  z-index: 1000;
+  width: 300px;
+}
+
+#search-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#search-results {
+  list-style: none;
+  background: white;
+  margin-top: 5px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#search-results li {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+#search-results li:hover {
+  background: #f4f4f9;
+}
+
+.fab {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  font-size: 30px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fab:hover {
+  background-color: var(--primary-hover);
+}
+
+/* User Location Pulsing Dot */
+.user-location-dot {
+  width: 15px;
+  height: 15px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+.pulse-ring {
+  content: "";
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-color);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulsing 2s infinite ease-out;
+}
+@keyframes pulsing {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Draft Pin UI */
+.draft-pin-marker {
+  filter: hue-rotate(270deg) saturate(200%) brightness(1.2); /* Violet/purple tint for draft pins */
+  drop-shadow: 0px 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.reporting-hud {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: var(--card-bg);
+  padding: 15px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+/* Enhanced Map Markers */
+.marker-lost {
+  filter: hue-rotate(0deg) saturate(100) brightness(1)
+    drop-shadow(0 2px 3px rgba(255, 0, 0, 0.5));
+  border-radius: 50%;
+  border: 2px solid #ff4444;
+  background: white;
+}
+.marker-found {
+  filter: hue-rotate(120deg) saturate(2) brightness(0.8)
+    drop-shadow(0 2px 3px rgba(0, 255, 0, 0.5));
+  border-radius: 50%;
+  border: 2px solid #4caf50;
+  background: white;
+}
+.marker-injured {
+  filter: hue-rotate(60deg) saturate(2) brightness(1.2)
+    drop-shadow(0 2px 3px rgba(255, 200, 0, 0.5));
+  border-radius: 50%;
+  border: 2px solid #ffeb3b;
+  background: white;
+}
+.marker-sighting {
+  filter: hue-rotate(200deg) saturate(1.5) brightness(1)
+    drop-shadow(0 2px 3px rgba(0, 100, 255, 0.5));
+  border-radius: 50%;
+  border: 2px solid #2196f3;
+  background: white;
+}
+
+/* Native Dialog Style */
+dialog {
+  margin: auto;
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  width: 90%;
+  max-width: 500px;
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.close-btn {
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
