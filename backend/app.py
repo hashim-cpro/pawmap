@@ -92,7 +92,7 @@ def register():
     email = data.get("email")
     password = data.get("password")
     name = data.get("name", "")
-
+    # appwrite
     user_client = Client()
     user_client.set_endpoint(ENDPOINT)
     user_client.set_project(PROJECT_ID)
@@ -162,11 +162,8 @@ def get_animals():
         response = admin_db.list_documents(
             DATABASE_ID, ANIMALS_COLLECTION_ID, queries=[Query.order_desc("created_at")]
         )
-        # In Appwrite SDK 18.x+, response is an object, so we convert documents to dicts for JSON
-        documents = [
-            doc.to_dict() if hasattr(doc, "to_dict") else doc
-            for doc in response.documents
-        ]
+        # Flatten Appwrite's nested `data` payload so frontend code can read fields directly.
+        documents = [flatten_appwrite_document(doc) for doc in response.documents]
         return jsonify(documents), 200
     except AppwriteException as e:
         return jsonify({"error": str(e)}), e.code
@@ -176,8 +173,7 @@ def get_animals():
 def get_animal(animal_id):
     try:
         response = admin_db.get_document(DATABASE_ID, ANIMALS_COLLECTION_ID, animal_id)
-        # Convert model object to dict
-        doc_data = response.to_dict() if hasattr(response, "to_dict") else response
+        doc_data = flatten_appwrite_document(response)
         return jsonify(doc_data), 200
     except AppwriteException as e:
         return jsonify({"error": str(e)}), e.code
@@ -187,7 +183,9 @@ def get_animal(animal_id):
 @login_required
 def create_animal():
     data = dict(request.form)
-    data["created_at"] = datetime.datetime.utcnow().isoformat()
+    current_time = datetime.datetime.utcnow().isoformat() + "Z"
+    data["created_at"] = current_time
+    data["last_seen"] = current_time
     files = request.files.getlist("media")
 
     # Cast variables properly based on appwrite schema
@@ -216,7 +214,12 @@ def create_animal():
             uploaded_file = user_storage.create_file(
                 BUCKET_ID, ID.unique(), InputFile.from_path(temp_path)
             )
-            asset_ids.append(uploaded_file["$id"])
+            uploaded_file_id = getattr(uploaded_file, "id", None)
+            if uploaded_file_id is None and isinstance(uploaded_file, dict):
+                uploaded_file_id = uploaded_file.get("$id") or uploaded_file.get("id")
+            if uploaded_file_id is None:
+                raise AppwriteException("Upload succeeded but no file ID was returned.")
+            asset_ids.append(uploaded_file_id)
             os.remove(temp_path)
 
         data["assets"] = asset_ids
@@ -224,10 +227,22 @@ def create_animal():
         response = user_db.create_document(
             DATABASE_ID, ANIMALS_COLLECTION_ID, ID.unique(), data
         )
-        doc_data = response.to_dict() if hasattr(response, "to_dict") else response
+        doc_data = flatten_appwrite_document(response)
         return jsonify(doc_data), 201
     except AppwriteException as e:
         return jsonify({"error": str(e)}), e.code
+
+
+def flatten_appwrite_document(document):
+    doc_data = document.to_dict() if hasattr(document, "to_dict") else dict(document)
+    nested_data = doc_data.get("data")
+
+    if isinstance(nested_data, dict):
+        flattened = {**doc_data, **nested_data}
+        flattened.pop("data", None)
+        return flattened
+
+    return doc_data
 
 
 if __name__ == "__main__":

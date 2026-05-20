@@ -36,9 +36,83 @@ const setupNav = async () => {
 const dialog = document.getElementById("animal-dialog");
 const closeDialogBtn = document.getElementById("close-dialog");
 const fabAdd = document.getElementById("fab-add-animal");
+const toggleFormBtn = document.getElementById("toggle-form-btn");
+const placePinsBtn = document.getElementById("place-pins-btn");
 const animalForm = document.getElementById("animal-form");
 const getLocBtn = document.getElementById("get-location-btn");
 const locText = document.getElementById("selected-coords");
+const mediaInput = document.getElementById("animal-media");
+const mediaPreview = document.getElementById("media-preview");
+
+let previewUrls = [];
+
+const clearMediaPreviews = () => {
+  previewUrls.forEach((url) => URL.revokeObjectURL(url));
+  previewUrls = [];
+
+  if (mediaPreview) {
+    mediaPreview.innerHTML = "";
+    mediaPreview.classList.add("hidden");
+  }
+};
+
+const renderMediaPreviews = () => {
+  if (!mediaInput || !mediaPreview) return;
+
+  clearMediaPreviews();
+
+  const files = Array.from(mediaInput.files || []);
+  if (files.length === 0) return;
+
+  files.forEach((file) => {
+    const previewItem = document.createElement("div");
+    previewItem.className = "media-preview-item";
+
+    const previewUrl = URL.createObjectURL(file);
+    previewUrls.push(previewUrl);
+
+    if (file.type.startsWith("video/")) {
+      const video = document.createElement("video");
+      video.src = previewUrl;
+      video.controls = true;
+      video.playsInline = true;
+      previewItem.appendChild(video);
+    } else {
+      const image = document.createElement("img");
+      image.src = previewUrl;
+      image.alt = file.name;
+      previewItem.appendChild(image);
+    }
+
+    const caption = document.createElement("span");
+    caption.textContent = file.name;
+    previewItem.appendChild(caption);
+
+    mediaPreview.appendChild(previewItem);
+  });
+
+  mediaPreview.classList.remove("hidden");
+};
+
+const showFormDialog = () => {
+  if (!dialog) return;
+  dialog.showModal();
+  if (toggleFormBtn) toggleFormBtn.classList.add("hidden");
+};
+
+const hideFormDialog = ({ resetForm = false } = {}) => {
+  if (!dialog) return;
+  dialog.close();
+  if (toggleFormBtn) toggleFormBtn.classList.remove("hidden");
+
+  if (resetForm && animalForm) {
+    animalForm.reset();
+    window.pawmapState.selectedLocation = null;
+    window.pawmapState.isSelectingLocation = false;
+    if (locText) locText.innerText = "Select location on map or use button";
+    clearMediaPreviews();
+  }
+};
 
 if (fabAdd) {
   fabAdd.addEventListener("click", () => {
@@ -46,16 +120,25 @@ if (fabAdd) {
       alert("Please login first.");
       return;
     }
-    dialog.showModal();
+    showFormDialog();
+  });
+}
+
+if (toggleFormBtn) {
+  toggleFormBtn.addEventListener("click", () => {
+    showFormDialog();
   });
 }
 
 if (closeDialogBtn) {
   closeDialogBtn.addEventListener("click", () => {
-    dialog.close();
-    if (animalForm) animalForm.reset();
-    window.pawmapState.isSelectingLocation = false;
-    locText.innerText = "Select location on map or use button";
+    hideFormDialog();
+  });
+}
+
+if (placePinsBtn) {
+  placePinsBtn.addEventListener("click", () => {
+    hideFormDialog();
   });
 }
 
@@ -79,6 +162,10 @@ if (getLocBtn) {
       alert("Geolocation is not supported by your browser.");
     }
   });
+}
+
+if (mediaInput) {
+  mediaInput.addEventListener("change", renderMediaPreviews);
 }
 
 if (animalForm) {
@@ -128,8 +215,7 @@ if (animalForm) {
 
       if (res.ok) {
         alert("Sighting reported successfully!");
-        dialog.close();
-        animalForm.reset();
+        hideFormDialog({ resetForm: true });
         window.location.reload(); // Quick way to refresh map
       } else {
         const data = await res.json();

@@ -34,6 +34,7 @@
 
     <!-- Add Animal FAB -->
     <button id="fab-add-animal" class="fab hidden">+</button>
+    <button id="toggle-form-btn" class="fab fab-secondary hidden">Form</button>
 
     <!-- Draft Reporting HUD -->
     <div id="reporting-hud" class="reporting-hud hidden">
@@ -97,6 +98,7 @@
             multiple
             accept=".jpg,.jpeg,.png,.mp4"
           />
+          <div id="media-preview" class="media-preview hidden"></div>
         </div>
 
         <div class="form-group">
@@ -106,6 +108,12 @@
           <p id="selected-coords" style="margin-top: 10px; font-style: italic">
             Select location on map or use button
           </p>
+        </div>
+
+        <div class="dialog-actions">
+          <button type="button" id="place-pins-btn" class="btn">
+            Place Pins on Map
+          </button>
         </div>
 
         <button type="submit" class="btn" style="width: 100%">
